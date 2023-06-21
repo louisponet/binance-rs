@@ -707,6 +707,30 @@ impl Account {
             .map(|_| ())
     }
 
+    pub fn cancel_replace_order<S>(&self, symbol: S, order_side: OrderSide, order_id: u64, qty: f64, price: f64) -> Result<OrderCanceled>
+    where
+        S: Into<String>,
+    {
+        let order = OrderRequest {
+            symbol: symbol.into(),
+            qty: qty.into(),
+            price,
+            stop_price: None,
+            order_side,
+            order_type: OrderType::Limit,
+            time_in_force: TimeInForce::GTC,
+            new_client_order_id: None,
+        };
+
+        let mut params = self.build_order(order);
+        params.insert("orderId".into(), order_id.to_string());
+        params.insert("cancelReplaceMode".into(), "ALLOW_FAILURES".into());
+
+        let request = build_signed_request(params, self.recv_window)?;
+        self.client
+            .post_signed(API::Spot(Spot::CancelReplace), request)
+    }
+
     // Trade history
     pub fn trade_history<S>(&self, symbol: S) -> Result<Vec<TradeHistory>>
     where

@@ -44,6 +44,7 @@ pub enum Spot {
     Account,
     MyTrades,
     UserDataStream,
+    CancelReplace
 }
 
 pub enum Sapi {
@@ -120,6 +121,7 @@ impl From<API> for String {
                 Spot::Account => "/api/v3/account",
                 Spot::MyTrades => "/api/v3/myTrades",
                 Spot::UserDataStream => "/api/v3/userDataStream",
+                Spot::CancelReplace => "/api/v3/CancelReplace"
             },
             API::Savings(route) => match route {
                 Sapi::AllCoins => "/sapi/v1/capital/config/getall",
