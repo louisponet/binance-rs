@@ -724,7 +724,9 @@ impl Account {
 
         let mut params = self.build_order(order);
         params.insert("orderId".into(), order_id.to_string());
-        params.insert("cancelReplaceMode".into(), "ALLOW_FAILURES".into());
+        // Only resubmit order when true cancel, otherwise new one will already
+        // be on its way from the executor due to "Done" status
+        params.insert("cancelReplaceMode".into(), "STOP_ON_FAILURE".into());
 
         let request = build_signed_request(params, self.recv_window)?;
         self.client
